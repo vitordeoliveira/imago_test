@@ -1,0 +1,85 @@
+{% extends "base.html" %} {% block content %}
+<div class="mb-4">
+  <h1>Search Results for "{{ query }}"</h1>
+  <p>Found {{ results.total }} results</p>
+
+  <form action="/search" method="get" class="mb-4">
+    <div class="input-group">
+      <input
+        type="text"
+        class="form-control"
+        name="q"
+        value="{{ query }}"
+        placeholder="Search for media..."
+      />
+      <button class="btn btn-primary" type="submit">Search</button>
+    </div>
+  </form>
+</div>
+
+{% if results.results %}
+<div class="row row-cols-1 row-cols-md-3 g-4">
+  {% for item in results.results %}
+  <div class="col">
+    <div class="card media-card h-100">
+      <img
+        src="{{ item.thumbnail_url }}"
+        class="card-img-top thumbnail"
+        alt="{{ item.title }}"
+      />
+      <div class="card-body">
+        <h5 class="card-title">{{ item.title|truncate(30) }}</h5>
+      </div>
+      <div class="card-footer">
+        <small class="text-muted"
+          >ID: {{ item.id }} | Date: {{ item.date | format_iso_date }}</small
+        >
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+<!-- Pagination -->
+<nav class="mt-4">
+  <ul class="pagination justify-content-center">
+    {% if results.page > 1 %}
+    <li class="page-item">
+      <a
+        class="page-link"
+        href="/search?q={{ query }}&page={{ results.page - 1 }}&size={{ results.size }}"
+        >Previous</a
+      >
+    </li>
+    {% else %}
+    <li class="page-item disabled">
+      <span class="page-link">Previous</span>
+    </li>
+    {% endif %} {% set total_pages = ((results.total + results.size - 1) //
+    results.size) %} {% for p in range(max(1, results.page - 2), min(total_pages
+    + 1, results.page + 3)) %}
+    <li class="page-item {% if p == results.page %}active{% endif %}">
+      <a
+        class="page-link"
+        href="/search?q={{ query }}&page={{ p }}&size={{ results.size }}"
+        >{{ p }}</a
+      >
+    </li>
+    {% endfor %} {% if results.page < total_pages %}
+    <li class="page-item">
+      <a
+        class="page-link"
+        href="/search?q={{ query }}&page={{ results.page + 1 }}&size={{ results.size }}"
+        >Next</a
+      >
+    </li>
+    {% else %}
+    <li class="page-item disabled">
+      <span class="page-link">Next</span>
+    </li>
+    {% endif %}
+  </ul>
+</nav>
+{% else %}
+<div class="alert alert-info">No results found for "{{ query }}"</div>
+{% endif %} {% endblock %}
