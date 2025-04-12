@@ -31,7 +31,7 @@ imago-media-service/
 1. Clone the repository:
 
 ```
-git clone imago_test
+git clone https://github.com/vitordeoliveira/imago_test.git
 cd imago_test
 ```
 
